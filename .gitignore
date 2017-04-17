@@ -3,3 +3,4 @@
 .RData
 R/xml2df.R
 data-raw/gen-sample-xml.R
+xmlExtras.Rproj

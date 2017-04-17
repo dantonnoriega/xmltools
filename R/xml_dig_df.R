@@ -4,7 +4,7 @@
 #' @export
 #' @return nested lists of dataframes
 
-xml_dig <- function(nodeset, dig = TRUE) {
+xml_dig_df <- function(nodeset, dig = TRUE) {
 
   stopifnot(class(nodeset) == "xml_nodeset")
 
