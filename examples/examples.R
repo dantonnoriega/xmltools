@@ -18,12 +18,29 @@ xpaths <- terminal %>% ## collapse xpaths to unique only
   unlist() %>%
   unique()
 
+# xmlToDataFrame works great on terminal nodes.
+# problem with xmlToDataFrame is it keeps digging.
+df0 <- lapply(xpaths, function(x) {
+  doc <- file %>% XML::xmlInternalTreeParse()
+  nodeset <- XML::getNodeSet(doc2, x)
+  XML::xmlToDataFrame(nodeset)
+})
+
+doc %>%
+  xml_get_paths(mark_terminal = ">>") %>%
+  '[['(1)
+# want just:
+#   "/root/listing/payment_types"
+#   "/root/listing/shipping_info"
+#   "/root/listing/buyer_protection_info"
+xpaths[1:2] # /root/listing is terminal parent but xmlToDataFrame keeps digging
+df0[[1]] # not good; want just
+df0[[2]] # good!
+
 # using xml_to_df
-top_df1  <- xml_to_df(doc, '//listing', is_xml = TRUE, dig   = FALSE)
 ## use the terminal xpaths to get data frames
-term_df1 <- lapply(xpaths, xml_to_df, file     = doc, is_xml = TRUE, dig = FALSE) %>%
+df1 <- lapply(xpaths, xml_to_df, file = doc, is_xml = TRUE, dig = FALSE) %>%
   dplyr::bind_cols()
-df1 <- dplyr::bind_cols(top_df1, term_df1)
 
 df1 %>%
   dplyr::select(-description) # omit description to see df better

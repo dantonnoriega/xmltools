@@ -4,7 +4,7 @@
 \alias{xml_get_paths}
 \title{view the paths of xml tree. keeps order as one dives into each node. option to mark any terminal paths (paths that end on the last possible node).}
 \usage{
-xml_get_paths(doc, mark_terminal = ifelse(only_terminal_parent, ">>", NULL),
+xml_get_paths(doc, mark_terminal = ifelse(only_terminal_parent, ">>", ""),
   only_terminal_parent = FALSE)
 }
 \arguments{

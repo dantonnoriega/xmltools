@@ -4,7 +4,7 @@
 #' @param only_terminal_parent whether to return only the parent node of any terminal branch
 #' @export
 
-xml_get_paths <- function(doc, mark_terminal = ifelse(only_terminal_parent, ">>", NULL),
+xml_get_paths <- function(doc, mark_terminal = ifelse(only_terminal_parent, ">>", ""),
   only_terminal_parent = FALSE) {
 
   stopifnot("xml_document" %in% class(doc))
@@ -14,16 +14,16 @@ xml_get_paths <- function(doc, mark_terminal = ifelse(only_terminal_parent, ">>"
   top_nodeset <- xml2::xml_children(root)
   paths <- path_dig(top_nodeset, mark_terminal = mark_terminal) %>%
     lapply(. %>% unlist)
+  paths <- lapply(paths, gsub, pattern = '\\[[0-9]+\\]', replacement = '', character(0))
 
   if(only_terminal_parent) {
     paths <- lapply(paths, function(x) {
       pattern <- paste0('^', mark_terminal)
       indx <- grepl(pattern, x)
       # get parent nodes and refine
-      y <- gsub(pattern, '', x[indx]) %>%
+      gsub(pattern, '', x[indx]) %>%
         dirname() %>%
         unique()
-      gsub('\\[[0-9]+\\]', '', y)
     })
   }
 
@@ -32,7 +32,8 @@ xml_get_paths <- function(doc, mark_terminal = ifelse(only_terminal_parent, ">>"
 }
 
 #' @export
-xml_get_path <- function(doc, mark_terminal = NULL) xml_get_paths(doc, markdown)
+xml_get_path <- function(doc, mark_terminal = ifelse(only_terminal_parent, ">>", ""),
+  only_terminal_parent = FALSE) xml_get_paths(doc, markdown)
 
 
 path_dig <- function(nodeset, ...) {
@@ -53,20 +54,27 @@ path_dig <- function(nodeset, ...) {
         i = x, j = nodeset, USE.NAMES = FALSE, SIMPLIFY = FALSE)
   } else {
     if(sum(terminal) == length(terminal)) {
-      nodeset <- nodeset[terminal] # subset to only terminal nodes
+      terminal_nodes <- nodeset[terminal] # subset to only terminal nodes
       if(!is.null(mark_terminal)) {
         mark_terminal <- as.character(mark_terminal)
-        x <- trimws(paste0(mark_terminal, xml2::xml_path(nodeset)))
+        x <- trimws(paste0(mark_terminal, xml2::xml_path(terminal_nodes)))
       } else {
-        x <- xml2::xml_path(nodeset)
+        x <- xml2::xml_path(terminal_nodes)
       }
       return(x)
     } else {
-      nodeset <- nodeset[!terminal] # subset
-      x <- xml2::xml_path(nodeset)
+      terminal_nodes <- nodeset[terminal]
+      if(!is.null(mark_terminal)) {
+        mark_terminal <- as.character(mark_terminal)
+        x <- trimws(paste0(mark_terminal, xml2::xml_path(terminal_nodes)))
+      } else {
+        x <- xml2::xml_path(terminal_nodes)
+      }
+      nodeset <- nodeset[!terminal]
+      y <- xml2::xml_path(nodeset)
       nodeset <- lapply(nodeset, xml2::xml_children)
-      mapply(function(i, j) list(i, path_dig(j, ...)),
-        i = x, j = nodeset, USE.NAMES = FALSE, SIMPLIFY = FALSE)
+      append(x, mapply(function(i, j) list(i, path_dig(j, ...)),
+        i = y, j = nodeset, USE.NAMES = FALSE, SIMPLIFY = FALSE))
     }
   }
 }
