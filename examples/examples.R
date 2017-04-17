@@ -28,9 +28,9 @@ df1 <- dplyr::bind_cols(top_df1, term_df1)
 df1 %>%
   dplyr::select(-description) # omit description to see df better
 
-# xml_dig
+# xml_dig_df
 top_df2 <- nodeset %>%
-  xml_dig(F) %>% # dont dig beyond the first terminal node
+  xml_dig_df(F) %>% # dont dig beyond the first terminal node
   dplyr::bind_rows()
 ## lets get terminal data
 tree[[1]] %>% xml_view_tree()
@@ -40,7 +40,7 @@ lvl2 <- nodeset %>% # get children of each node in nodeset
     xml2::xml_children()) # use lapply so nodes are separated
 term_df2 <- lvl2 %>%
   lapply(. %>%
-    xml_dig() %>% # apply xml_dig to get set of nodesets
+    xml_dig_df() %>% # apply xml_dig_df to get set of nodesets
     dplyr::bind_cols()) %>%
   dplyr::bind_rows()
 
