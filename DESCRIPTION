@@ -1,0 +1,17 @@
+Package: xmlExtras
+Title: Random functions for xml beyond those from the XML and xml2 packages.
+Version: 0.0.0.9000
+Description: Extra tools for looking at XML structure (xml_get_trees), all xml paths (xml_get_paths), and tools for converting xml to data frames (xml_to_df, xml_dig, xml2df), each with their own pros and cons.
+Depends: R (>= 3.3.3)
+License: Creative Commons
+Encoding: UTF-8
+LazyData: true
+Imports:
+    tidyverse,
+    data.table,
+    magrittr,
+    XML,
+    xml2,
+    stringr
+RoxygenNote: 6.0.1
+
