@@ -7,8 +7,7 @@ output: github_document
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  fig.path = "README-",
+  comment = "#>"
 )
 ```
 # Motivation
@@ -30,7 +29,7 @@ There are 3 things I felt were missing the two wonderful packages [`XML`](https:
 Run the following.
 
 ```{r, eval=FALSE}
-devtools::install_github('ultinomics/xmlExtras')
+devtools::install_github('ultinomics/xmltools')
 library(xmlExtras)
 ```
 
@@ -50,37 +49,85 @@ nodeset <- doc %>%
   xml2::xml_children() # get top level nodeset
 ```
 
+## View XML trees/structures
+
 Let's look at the structure of the data. The function
 
-```{r ex1b}
+```{r ex1b, eval = F}
 # `xml_view_tree` structure
 ## we can get a tree for each node of the doc
 doc %>% 
   xml_view_tree()
 doc %>% # we can also vary the depth
   xml_view_tree(depth = 2)
+```
+
+```{r ex1ba}
+## easier to read and understand than `xml2::xml_structure()` and has the `depth` option
+nodeset[1] %>% xml2::xml_structure()
+
 ## or, we can extract from nodesets
+class(nodeset[1])
 nodeset[1] %>%
   xml_view_trees()
 nodeset[1] %>%
   xml_view_trees(depth=2)
-class(nodeset[1])
-## Will not work with class "xml_node" (can't use lapply on those, apparently)
+
+## will not work with class "xml_node" (can't use lapply on those, apparently)
+class(nodeset[[1]])
 nodeset[[1]] %>%
   xml_view_tree()
-class(nodeset[[1]])
-## easier to read and understand than `xml2::xml_structure()` and has the `depth` option
-nodeset[[1]] %>% xml2::xml_structure()
-nodeset[[1]] %>% xml2::xml_structure()
+
 ```
-terminal <- doc %>% ## get the xpath to parents of terminal node
-  xml_get_paths(only_terminal_parent = TRUE)
+
+## Get Terminal Nodes
+
+Terminal nodes in XMLs are nodes that do no have any "children". These nodes contain the information we generally want to extract into a tidy data frame.
+
+The other thing I've found myself wanting easy access to but could find no easy tool to do so was a quick way to extract all existing paths in an XML structure---especially paths to terminal nodes. The function `xml_get_paths` (or `xml_get_path`) provides this function.
+
+```{r ex1c, eval = F}
+## one can see all the paths per node of a doc
+doc %>%
+  xml_get_paths()
+```
+
+```{r ex1d}
+## can look at one nodeset
+## NOTE that nodesets can vary, so looking at one doesn't mean you'll find all feasible paths
+nodeset[1] %>%
+  xml_get_paths()
+nodeset[1] %>%
+  xml_get_paths(mark_terminal = ">>") # can mark terminal nodes
+
+## we can find all feasible paths then collapse
+terminal <- doc %>% ## get all xpaths
+  xml_get_paths()
 xpaths <- terminal %>% ## collapse xpaths to unique only
   unlist() %>%
   unique()
+xpaths
 
-# xmlToDataFrame works great on terminal nodes.
-# problem with xmlToDataFrame is it keeps digging.
+## but what we really want is the parent node of terminal nodes.
+## use the `only_terminal_parent = TRUE` to do this
+terminal_parent <- doc %>% ## get all xpaths to parents of parent node
+  xml_get_paths(only_terminal_parent = TRUE)
+xpaths <- terminal_parent %>% ## collapse xpaths to unique only
+  unlist() %>%
+  unique()
+xpaths
+
+```
+
+## Extracting XML Data to Tidy Data Frames
+
+Next, we use the terminal xpaths above to extract the data we want.
+
+First, I want to show the issue with using `XML::xmlToDataFrame`.
+
+```{r ex1e}
+## xmlToDataFrame works great on terminal nodes.
+## we extract a data frame for each parent of terminal nodes
 df0 <- lapply(xpaths, function(x) {
   doc <- file %>% XML::xmlInternalTreeParse()
   nodeset <- XML::getNodeSet(doc, x)
@@ -88,36 +135,103 @@ df0 <- lapply(xpaths, function(x) {
     dplyr::as_data_frame()
 })
 
-doc %>%
-  xml_get_paths(mark_terminal = ">>") %>%
-  '[['(1)
-
-# want just:
+# We want the data in:
 #   "/root/listing/payment_types"
 #   "/root/listing/shipping_info"
 #   "/root/listing/buyer_protection_info"
-xpaths[1] # /root/listing is terminal parent but xmlToDataFrame keeps digging
-df0[[1]] # not good; keeps diving into other nodes
-xpaths[2]
-df0[[2]] # good because it could dive further
+nodeset[1] %>%
+  xml_view_tree()
+```
 
+There is data contained in the terminal paths
+
+```
+/root/listing/payment_types
+/root/listing/shipping_info
+/root/listing/buyer_protection_info
+```
+
+with the parent node
+
+```
+/root/listing
+```
+
+But `XML::xmlToDataFrame` will keep digging into `/root/listing` and extract data from xpaths like `/root/listing/seller_info`. But it does so extracting data in a non tidy way. We can see this below comparing the data in `df0[[1]] %>% dplyr::select(seller_info)` vs `df0[[2]]`, which is data extracted from just from `/root/listing/seller_info` and deeper.
+
+```{r ex1f}
+## problem with xmlToDataFrame is it keeps digging into other nodes recursively in "/root/listing"
+xpaths[1] # /root/listing is terminal parent but xmlToDataFrame keeps digging
+df0[[1]] %>%
+  dplyr::select(seller_info) # not good; keeps diving into other nodes but fails to separate
+xpaths[2]
+df0[[2]] # works because the recursive dig down hits only the terminal nodes
+```
+
+
+The solution that worked for me was to write a function that, by default, does not dig into non-terminal nodes. That is, when given the xpath `/root/listing`, the function will only go into terminal nodes
+
+```
+/root/listing/payment_types
+/root/listing/shipping_info
+/root/listing/buyer_protection_info
+```
+
+And ignore the other, non-terminal nodes unless instructed to do so otherwise by setting option `dig = TRUE`.
+
+### `xml_to_df`
+
+The `xml_to_df` function is built on the `XML` package and `data.table`. By default, it does not dig into non-terminal nodes (`dig = FALSE`) when given any xpath. One can pass a path to an XML file (`is_xml = FALSE`) or an already parsed XML file (`is_xml = TRUE`).
+
+Once
+
+
+```{r ex1g}
 # xml_to_df (XML package based)
 ## does not dig by default
 ## use the terminal xpaths to get data frames
-df1 <- lapply(xpaths, xml_to_df, file = doc, is_xml = TRUE, dig = FALSE) %>%
+terminal_parent <- doc %>% ## get all xpaths to parents of parent node
+  xml_get_paths(only_terminal_parent = TRUE)
+terminal_xpaths <- terminal_parent %>% ## collapse terminal xpaths to unique only
+  unlist() %>%
+  unique()
+terminal_xpaths
+```
+
+## `xml_dig_df`
+
+The other fuction is `xml_dig_df` which is built on `xml2` and `tidyverse` packages.
+
+The important distinction is that we first need to find all the terminal nodesets we want to parse. We find these using `xml2::xml_find_all` on each of the `terminal_xpaths` on the original parsed xml file (`doc`).
+
+For each `terminal_nodeset`, we then apply `xml_dig_df`. For each nodeset, we will get single row of data, so we bind the results for each nodeset. The final data frame is created by column binding. (I convert all empty strings to `NA` for good measure.)
+
+Notice that these data frames are the same. The difference is that `xml_to_df` outputs a `data.table` object and `xml_dig_df` outputs a `tibble` object.
+
+```{r ex1h}
+## we send each terminal xpath to `xml_to_df`. 
+## the file source is the parsed xml object `doc`, so we set `is_xml = TRUE`
+## we do no want to dig, which quickly gets us the data we want for each terminal xpath `dig = FALSE` (default)
+df1 <- lapply(terminal_xpaths, xml_to_df, file = doc, is_xml = TRUE, dig = FALSE) %>%
   dplyr::bind_cols()
 df1
 
 # xml_dig_df (xml2 package based)
-## does not dig by default
 tree[[1]] %>% xml_view_tree()
 terminal_nodesets <- lapply(xpaths, xml2::xml_find_all, x = doc)
 df2 <- terminal_nodesets %>%
-  purrr::map(xml_dig_df) %>%
+  purrr::map(xml_dig_df) %>% ## does not dig by default
   purrr::map(dplyr::bind_rows) %>%
-  dplyr::bind_cols()
+  dplyr::bind_cols() %>%
+  dplyr::mutate_all(empty_as_na)
+df2
+```
 
+# Example 2
 
+Below is another example to work through. The output is hidden but copy and paste the code or find the source file in this repository `example.R`.
+
+```{r ex2, eval = F}
 # USING wsu.xml ------------------------------------------------
 # larger file
 
@@ -151,12 +265,12 @@ df1
 
 # xml_dig_df (xml2 package based)
 ## faster!
-terminal_nodesets <- lapply(xpaths, xml2::xml_find_all, x = doc) # use xml docs, not nodesets! I think this is because it searches the 'root'.
+terminal_nodesets <- lapply(terminal_xpaths, xml2::xml_find_all, x = doc) # use xml docs, not nodesets! I think this is because it searches the 'root'.
 df2 <- terminal_nodesets %>%
   purrr::map(xml_dig_df) %>%
   purrr::map(dplyr::bind_rows) %>%
   dplyr::bind_cols() %>%
-  dplyr::mutate_all(empty_as_na) # kill of NAs
+  dplyr::mutate_all(empty_as_na)
 df2
 
 # they're the same!

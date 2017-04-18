@@ -1,26 +1,26 @@
 #' view xml simliar to the unix tree command line tool
-#' @param tree an object of class "xml_tree", "xml_tree_list", or "xml_document"
+#' @param xml an object of class "xml_nodeset" or "xml_document"
 #' @param depth how deep to go. root is 0, next is 1, etc. NULL by default.
 #' @export
-xml_view_trees <- function(tree, depth = NULL) {
+xml_view_trees <- function(xml, depth = NULL) {
 
-  stopifnot(any(c("xml_tree", "xml_tree_list", "xml_document", "xml_nodeset") %in% class(tree)))
+  stopifnot(any(c("xml_tree", "xml_tree_list", "xml_document", "xml_nodeset") %in% class(xml)))
 
-  if(any(c("xml_nodeset","xml_document") %in% class(tree))) {
-    tree <- xml_get_trees(tree, depth = depth)
+  if(any(c("xml_nodeset","xml_document") %in% class(xml))) {
+    xml <- xml_get_trees(xml, depth = depth)
   } else {
     if(!is.null(depth)) warning("Option `depth` is ignored for xml_tree and xml_tree_objects.")
   }
 
-  if("xml_tree" %in% class(tree)) {
-    out <- paste(tree, collapse = "\n")
+  if("xml_tree" %in% class(xml)) {
+    out <- paste(xml, collapse = "\n")
     cat(out, "\n")
     invisible()
   }
 
-  if("xml_tree_list" == class(tree)) {
-    out <- lapply(tree, paste, collapse = "\n")
-    if(length(tree) > 1) {
+  if("xml_tree_list" == class(xml)) {
+    out <- lapply(xml, paste, collapse = "\n")
+    if(length(xml) > 1) {
       out <- paste("\n\n", paste0("(",seq_along(out),")"), "------------\n\n", out)
     } else {
       out <- paste(out)
@@ -32,7 +32,7 @@ xml_view_trees <- function(tree, depth = NULL) {
 }
 
 #' @export
-xml_view_tree <- function(tree, depth = NULL) xml_view_trees(tree, depth = depth)
+xml_view_tree <- function(xml, depth = NULL) xml_view_trees(xml, depth = depth)
 
 #' get a tree of xml simliar to the unix tree command line tool
 #' @param doc an xml doc or nodeset
