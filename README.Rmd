@@ -11,6 +11,7 @@ knitr::opts_chunk$set(
   fig.path = "README-",
 )
 ```
+# Motivation
 
 There are 3 things I felt were missing the two wonderful packages [`XML`](https://cran.r-project.org/web/packages/XML/index.html) and [`xml2`](https://github.com/hadley/xml2):
 
@@ -24,7 +25,10 @@ There are 3 things I felt were missing the two wonderful packages [`XML`](https:
     - `xml_dig_df` is based of `xml2` and `tidyverse` packages.
     
 
+# Installation
+
 ```{r}
+devtools::install_github('ultinomics/xmlExtras')
 library(xmlExtras)
 
 # USING ebay.xml ------------------------------------------------
