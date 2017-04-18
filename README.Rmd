@@ -75,9 +75,9 @@ nodeset[1] %>%
 
 ## will not work with class "xml_node" (can't use lapply on those, apparently)
 class(nodeset[[1]])
-nodeset[[1]] %>%
+try(nodeset[[1]] %>%
   xml_view_tree()
-
+)
 ```
 
 ## Get Terminal Nodes
@@ -217,7 +217,6 @@ df1 <- lapply(terminal_xpaths, xml_to_df, file = doc, is_xml = TRUE, dig = FALSE
 df1
 
 # xml_dig_df (xml2 package based)
-tree[[1]] %>% xml_view_tree()
 terminal_nodesets <- lapply(xpaths, xml2::xml_find_all, x = doc)
 df2 <- terminal_nodesets %>%
   purrr::map(xml_dig_df) %>% ## does not dig by default
