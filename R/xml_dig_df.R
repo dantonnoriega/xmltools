@@ -8,41 +8,44 @@ xml_dig_df <- function(nodeset, dig = FALSE) {
 
   stopifnot(class(nodeset) == "xml_nodeset")
 
-  node_names <- nodeset %>% xml2::xml_name()
-  node_len <- nodeset %>% xml2::xml_length()
+  if(length(nodeset) == 0) return(tibble::tibble())
+  else {
+    node_names <- nodeset %>% xml2::xml_name()
+    node_len <- nodeset %>% xml2::xml_length()
 
-  # top level are nodes with node_len == 0
-  terminal <- node_len == 0
+    # top level are nodes with node_len == 0
+    terminal <- node_len == 0
 
-  if(dig) {
-    if(sum(terminal) == 0) { # no top level data
-      nodeset <- lapply(nodeset, xml2::xml_children)
-      lapply(nodeset, xml_dig_df)
+    if(dig) {
+      if(sum(terminal) == 0) { # no top level data
+        nodeset <- lapply(nodeset, xml2::xml_children)
+        lapply(nodeset, xml_dig_df)
+      } else {
+          DF <- nodeset[terminal] %>%
+            xml2::xml_text() %>%
+            t() %>%
+            tibble::as_tibble()
+          colnames(DF) <- node_names[terminal]
+        if(sum(terminal) == length(terminal)) {
+          return(DF)
+        } else {
+          nodeset <- nodeset[!terminal]
+          nodeset <- lapply(nodeset, xml2::xml_children)
+          append(list(DF), lapply(nodeset, xml_dig_df))
+        }
+      }
     } else {
+      if(sum(terminal) == 0) { # no top level data
+        nodeset <- lapply(nodeset, xml2::xml_children)
+        lapply(nodeset, xml_dig_df, dig = FALSE)
+      } else {
         DF <- nodeset[terminal] %>%
           xml2::xml_text() %>%
           t() %>%
           tibble::as_tibble()
         colnames(DF) <- node_names[terminal]
-      if(sum(terminal) == length(terminal)) {
         return(DF)
-      } else {
-        nodeset <- nodeset[!terminal]
-        nodeset <- lapply(nodeset, xml2::xml_children)
-        append(list(DF), lapply(nodeset, xml_dig_df))
       }
-    }
-  } else {
-    if(sum(terminal) == 0) { # no top level data
-      nodeset <- lapply(nodeset, xml2::xml_children)
-      lapply(nodeset, xml_dig_df, dig = FALSE)
-    } else {
-      DF <- nodeset[terminal] %>%
-        xml2::xml_text() %>%
-        t() %>%
-        tibble::as_tibble()
-      colnames(DF) <- node_names[terminal]
-      return(DF)
     }
   }
 }
