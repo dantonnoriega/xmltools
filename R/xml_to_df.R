@@ -49,7 +49,7 @@ xml_to_df <- function(file, xpath, is_xml = FALSE, dig = FALSE) {
         ifelse(length(y) == 0, NA_character_, y), character(1), USE.NAMES = FALSE))
 
     #drop empty columns
-    drop <- sapply(dl, function(x) sum(!is.na(x))) == 0
+    drop <- vapply(dl, function(x) sum(!is.na(x)), integer(1)) == 0
     dl <- dl[!drop]
     fields <- fields[!drop]
 

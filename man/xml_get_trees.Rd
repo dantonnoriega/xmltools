@@ -7,7 +7,7 @@
 xml_get_trees(doc, depth = NULL)
 }
 \arguments{
-\item{doc}{an xml doc}
+\item{doc}{an xml doc or nodeset}
 
 \item{depth}{how deep to go. root is 0, next is 1, etc. NULL by default.}
 }

@@ -5,6 +5,6 @@ has_data <- function(x) { sum(!is.na(x)) > 0 }
 #' @source https://stackoverflow.com/questions/24172111/change-the-blank-cells-to-na
 empty_as_na <- function(x){
   if("factor" %in% class(x)) x <- as.character(x) ## since ifelse wont work with factors
-  ifelse(as.character(x)!="", x, NA)
+  if(class(x) == "character") ifelse(as.character(x)!="", x, NA) else x
 }
 

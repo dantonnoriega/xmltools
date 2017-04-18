@@ -4,7 +4,7 @@
 \alias{xml_dig_df}
 \title{dig into a nodeset until we find top level data. that is, a node of lenght 0. extract any data with node == 0 (indexed TRUE)}
 \usage{
-xml_dig_df(nodeset, dig = TRUE)
+xml_dig_df(nodeset, dig = FALSE)
 }
 \arguments{
 \item{nodeset}{any nodeset of object type xml2}

@@ -1,5 +1,6 @@
-# USING ebay.xml ------------------------------------------------
+library(xmlExtras)
 
+# USING ebay.xml ------------------------------------------------
 # learn about the structure
 file <- 'data-raw/ebay.xml'
 doc <- file %>%
@@ -22,49 +23,39 @@ xpaths <- terminal %>% ## collapse xpaths to unique only
 # problem with xmlToDataFrame is it keeps digging.
 df0 <- lapply(xpaths, function(x) {
   doc <- file %>% XML::xmlInternalTreeParse()
-  nodeset <- XML::getNodeSet(doc2, x)
-  XML::xmlToDataFrame(nodeset)
+  nodeset <- XML::getNodeSet(doc, x)
+  XML::xmlToDataFrame(nodeset, stringsAsFactors = FALSE) %>%
+    dplyr::as_data_frame()
 })
 
 doc %>%
   xml_get_paths(mark_terminal = ">>") %>%
   '[['(1)
+
 # want just:
 #   "/root/listing/payment_types"
 #   "/root/listing/shipping_info"
 #   "/root/listing/buyer_protection_info"
-xpaths[1:2] # /root/listing is terminal parent but xmlToDataFrame keeps digging
-df0[[1]] # not good; want just
-df0[[2]] # good!
+xpaths[1] # /root/listing is terminal parent but xmlToDataFrame keeps digging
+df0[[1]] # not good; keeps diving into other nodes
+xpaths[2]
+df0[[2]] # good because it could dive further
 
-# using xml_to_df
+# xml_to_df (XML package based)
+## does not dig by default
 ## use the terminal xpaths to get data frames
 df1 <- lapply(xpaths, xml_to_df, file = doc, is_xml = TRUE, dig = FALSE) %>%
   dplyr::bind_cols()
+df1
 
-df1 %>%
-  dplyr::select(-description) # omit description to see df better
-
-# xml_dig_df
-top_df2 <- nodeset %>%
-  xml_dig_df(F) %>% # dont dig beyond the first terminal node
-  dplyr::bind_rows()
-## lets get terminal data
+# xml_dig_df (xml2 package based)
+## does not dig by default
 tree[[1]] %>% xml_view_tree()
-lvl2 <- nodeset %>% # get children of each node in nodeset
-  lapply(. %>%
-    xml2::xml_children() %>%
-    xml2::xml_children()) # use lapply so nodes are separated
-term_df2 <- lvl2 %>%
-  lapply(. %>%
-    xml_dig_df() %>% # apply xml_dig_df to get set of nodesets
-    dplyr::bind_cols()) %>%
-  dplyr::bind_rows()
-
-df2 <- dplyr::bind_cols(top_df2, term_df2)
-
-df2 %>%
-  dplyr::select(-description) # omit description to see df better
+terminal_nodesets <- lapply(xpaths, xml2::xml_find_all, x = doc)
+df2 <- terminal_nodesets %>%
+  purrr::map(xml_dig_df) %>%
+  purrr::map(dplyr::bind_rows) %>%
+  dplyr::bind_cols()
 
 
 # USING wsu.xml ------------------------------------------------
@@ -74,16 +65,39 @@ df2 %>%
 file <- 'data-raw/wsu.xml'
 doc <- file %>%
   xml2::read_xml()
-df <- file %>% xml_to_df(xpath = "//course", is_xml = F)
-
-nodeset <- file %>%
-  xml2::read_xml() %>%
+nodeset <- doc %>%
   xml2::xml_children()
-nodeset %>% xml2::xml_path()
-nodeset %>% xml2::xml_structure()
-ns2 <- nodeset %>%
-  lapply(. %>% xml2::xml_children())
+length(nodeset) # lots of nodes!
+nodeset[1] %>% # lets look at ONE node's tree
+  xml_view_tree()
 
+## takes a long time. likely can extract from a single node
+# terminal_paths <- doc %>% ## get the xpath to parents of terminal node
+#   xml_get_paths(only_terminal_parent = TRUE)
 
+# lets assume that most nodes share the same structure
+terminal_paths <- nodeset[1] %>%
+  xml_get_paths(only_terminal_parent = TRUE)
 
-nodeset %>% lapply(. %>% xml_to_df(xpath = "/course", is_xml=T))
+xpaths <- terminal_paths %>% ## collapse xpaths to unique only
+  unlist() %>%
+  unique()
+
+# xml_to_df (XML package based)
+## note that we use file, not doc, hence is_xml = FALSE
+df1 <- lapply(xpaths, xml_to_df, file = file, is_xml = FALSE, dig = FALSE) %>%
+  dplyr::bind_cols()
+df1
+
+# xml_dig_df (xml2 package based)
+## faster!
+terminal_nodesets <- lapply(xpaths, xml2::xml_find_all, x = doc) # use xml docs, not nodesets! I think this is because it searches the 'root'.
+df2 <- terminal_nodesets %>%
+  purrr::map(xml_dig_df) %>%
+  purrr::map(dplyr::bind_rows) %>%
+  dplyr::bind_cols() %>%
+  dplyr::mutate_all(empty_as_na) # kill of NAs
+df2
+
+# they're the same!
+identical(df1, data.table::as.data.table(df2))

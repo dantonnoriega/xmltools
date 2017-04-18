@@ -4,7 +4,7 @@
 #' @export
 #' @return nested lists of dataframes
 
-xml_dig_df <- function(nodeset, dig = TRUE) {
+xml_dig_df <- function(nodeset, dig = FALSE) {
 
   stopifnot(class(nodeset) == "xml_nodeset")
 
@@ -17,7 +17,7 @@ xml_dig_df <- function(nodeset, dig = TRUE) {
   if(dig) {
     if(sum(terminal) == 0) { # no top level data
       nodeset <- lapply(nodeset, xml2::xml_children)
-      lapply(nodeset, xml_dig)
+      lapply(nodeset, xml_dig_df)
     } else {
         DF <- nodeset[terminal] %>%
           xml2::xml_text() %>%
@@ -29,13 +29,13 @@ xml_dig_df <- function(nodeset, dig = TRUE) {
       } else {
         nodeset <- nodeset[!terminal]
         nodeset <- lapply(nodeset, xml2::xml_children)
-        append(list(DF), lapply(nodeset, xml_dig))
+        append(list(DF), lapply(nodeset, xml_dig_df))
       }
     }
   } else {
     if(sum(terminal) == 0) { # no top level data
       nodeset <- lapply(nodeset, xml2::xml_children)
-      lapply(nodeset, xml_dig, dig = F)
+      lapply(nodeset, xml_dig_df, dig = FALSE)
     } else {
       DF <- nodeset[terminal] %>%
         xml2::xml_text() %>%

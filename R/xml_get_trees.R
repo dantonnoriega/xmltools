@@ -1,15 +1,17 @@
 #' get a tree of xml simliar to the unix tree command line tool
-#' @param doc an xml doc
+#' @param doc an xml doc or nodeset
 #' @param depth how deep to go. root is 0, next is 1, etc. NULL by default.
 #' @export
 xml_get_trees <- function(doc, depth = NULL) {
 
-  stopifnot("xml_document" %in% class(doc))
+  stopifnot(any(c("xml_document", "xml_nodeset") %in% class(doc)))
 
   if("xml_document" %in% class(doc)) {
     root <- xml2::xml_root(doc)
     nodeset <- xml2::xml_children(root)
   }
+
+  if("xml_nodeset" %in% class(doc)) nodeset <- doc
 
   tree <- tree_dig(nodeset, depth, counter = 1) %>%
     parse_tree()
@@ -28,10 +30,10 @@ xml_get_tree <- function(doc, ...) xml_get_trees(doc, ...)
 
 xml_view_trees <- function(tree, ...) {
 
-  stopifnot(any(c("xml_tree", "xml_tree_list", "xml_document") %in% class(tree)))
+  stopifnot(any(c("xml_tree", "xml_tree_list", "xml_document", "xml_nodeset") %in% class(tree)))
   args <- list(...)
 
-  if("xml_document" %in% class(tree)) {
+  if(any(c("xml_nodeset","xml_document") %in% class(tree))) {
     tree <- xml_get_trees(tree, depth = args$depth)
   } else {
     if(!is.null(args$depth)) warning("Option `depth` is ignored for xml_tree and xml_tree_objects.")
@@ -88,7 +90,8 @@ tree_dig <- function(nodeset, depth, counter = 1) {
       x[length(x)] <- gsub("├──","└──", x[length(x)]) # mark the last branch
       nodeset <- nodeset[!terminal]
       nodeset <- lapply(nodeset, xml2::xml_children)
-      append(list(y), mapply(function(i, j) append(list(i), tree_dig(j, depth, counter + 1)),
+      append(list(y), mapply(function(i, j)
+        append(list(i), tree_dig(j, depth, counter + 1)),
         i = x, j = nodeset, USE.NAMES = FALSE, SIMPLIFY = FALSE))
     }
   }

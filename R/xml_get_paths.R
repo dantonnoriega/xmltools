@@ -7,12 +7,17 @@
 xml_get_paths <- function(doc, mark_terminal = ifelse(only_terminal_parent, ">>", ""),
   only_terminal_parent = FALSE) {
 
-  stopifnot("xml_document" %in% class(doc))
+  stopifnot(any(c("xml_nodeset","xml_document") %in% class(doc)))
 
-  root <- xml2::xml_root(doc)
-  names_list <- list(xml2::xml_name(root))
-  top_nodeset <- xml2::xml_children(root)
-  paths <- path_dig(top_nodeset, mark_terminal = mark_terminal) %>%
+  if("xml_document" %in% class(doc)) {
+    root <- xml2::xml_root(doc)
+    names_list <- list(xml2::xml_name(root))
+    nodeset <- xml2::xml_children(root)
+  } else {
+    nodeset <- doc
+  }
+
+  paths <- path_dig(nodeset, mark_terminal = mark_terminal) %>%
     lapply(. %>% unlist)
   paths <- lapply(paths, gsub, pattern = '\\[[0-9]+\\]', replacement = '', character(0))
 
