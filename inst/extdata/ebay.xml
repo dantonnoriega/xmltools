@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<!DOCTYPE root SYSTEM "http://www.cs.washington.edu/research/projects/xmltk/xmldata/data/auctions/ebay.dtd">
+<root>
+  <listing>
+    <seller_info>
+      <seller_name> cubsfantony</seller_name>
+      <seller_rating> 848</seller_rating>
+    </seller_info>
+    <payment_types>Visa/MasterCard, Money Order/Cashiers Checks, Personal Checks, See item description for payment methods accepted
+   </payment_types>
+    <shipping_info>Buyer pays fixed shipping charges, Will ship to United States only
+   </shipping_info>
+    <buyer_protection_info>
+   </buyer_protection_info>
+    <auction_info>
+      <current_bid>$620.00 </current_bid>
+      <time_left> 4 days, 14 hours +  </time_left>
+      <high_bidder>
+        <bidder_name> gosha555@excite.com </bidder_name>
+        <bidder_rating>-2 </bidder_rating>
+      </high_bidder>
+      <num_items>1 </num_items>
+      <num_bids>  12</num_bids>
+      <started_at>$1.00 </started_at>
+      <bid_increment> </bid_increment>
+      <location> USA/Chicago</location>
+      <opened> Nov-27-00 04:57:50 PST</opened>
+      <closed> Dec-02-00 04:57:50 PST</closed>
+      <id_num> 511601118</id_num>
+      <notes>  </notes>
+    </auction_info>
+    <bid_history>
+      <highest_bid_amount>$620.00   </highest_bid_amount>
+      <quantity> 1</quantity>
+    </bid_history>
+    <item_info>
+      <memory> 256MB PC133 SDram</memory>
+      <hard_drive> 30 GB 7200 RPM IDE Hard Drive</hard_drive>
+      <cpu>Pentium III 933 System  </cpu>
+      <brand> </brand>
+    </item_info>
+  </listing>
+  <listing>
+    <seller_info>
+      <seller_name> ct-inc</seller_name>
+      <seller_rating> 403</seller_rating>
+    </seller_info>
+    <payment_types>Visa/MasterCard, Discover, Money Order/Cashiers Checks, Personal Checks, See item description for payment methods accepted
+   </payment_types>
+    <shipping_info>Buyer pays actual shipping charges, Will ship to United States and the following regions: Canada, See item description for shipping charges
+   </shipping_info>
+    <buyer_protection_info>
+   </buyer_protection_info>
+    <auction_info>
+      <current_bid> $620.00</current_bid>
+      <time_left> 2 days, 6 hours +</time_left>
+      <high_bidder>
+        <bidder_name> petitjc@yahoo.com</bidder_name>
+        <bidder_rating> 0</bidder_rating>
+      </high_bidder>
+      <num_items>1 </num_items>
+      <num_bids>  19</num_bids>
+      <started_at> $0.01</started_at>
+      <bid_increment> </bid_increment>
+      <location> USA/Los Angeles</location>
+      <opened> Nov-26-00 20:54:15 PST</opened>
+      <closed> Nov-29-00 20:54:15 PST</closed>
+      <id_num> 511448507</id_num>
+      <notes>  </notes>
+    </auction_info>
+    <bid_history>
+      <highest_bid_amount>$680.00
+       </highest_bid_amount>
+      <quantity> 1</quantity>
+    </bid_history>
+    <item_info>
+      <memory> 256MB PC-133 SDRAM </memory>
+      <hard_drive>30.7GB IBM Deskstar ATA100 7200RPM </hard_drive>
+      <cpu> Intel Pentium III 800EB-MHz Coppermine CPU </cpu>
+      <brand> CyberTech</brand>
+    </item_info>
+  </listing>
+  <listing>
+    <seller_info>
+      <seller_name> ct-inc</seller_name>
+      <seller_rating> 403</seller_rating>
+    </seller_info>
+    <payment_types>Money Order/Cashiers Checks, Personal Checks, See item description for payment methods accepted
+   </payment_types>
+    <shipping_info>Buyer pays actual shipping charges, Will ship to United States and the following regions: Canada, See item description for shipping charges
+   </shipping_info>
+    <buyer_protection_info>
+   </buyer_protection_info>
+    <auction_info>
+      <current_bid> $1,025.00</current_bid>
+      <time_left> 2 days, 6 hours +</time_left>
+      <high_bidder>
+        <bidder_name> hsclm9@peganet.com</bidder_name>
+        <bidder_rating>0 </bidder_rating>
+      </high_bidder>
+      <num_items> 1</num_items>
+      <num_bids>  29</num_bids>
+      <started_at> $0.01</started_at>
+      <bid_increment> </bid_increment>
+      <location> USA/Los Angeles</location>
+      <opened> Nov-26-00 20:50:33 PST</opened>
+      <closed> Nov-29-00 20:50:33 PST</closed>
+      <id_num> 511443245</id_num>
+      <notes>  </notes>
+    </auction_info>
+    <bid_history>
+      <highest_bid_amount>$1,025.00
+       </highest_bid_amount>
+      <quantity> 1</quantity>
+    </bid_history>
+    <item_info>
+      <memory> 256MB PC-133 SDRAM </memory>
+      <hard_drive> 45GB IBM Deskstar ATA100 7200RPM </hard_drive>
+      <cpu> Intel Pentium III 933EB-MHz Coppermine CPU </cpu>
+      <brand> CyberTech</brand>
+    </item_info>
+  </listing>
+  <listing>
+    <seller_info>
+      <seller_name>bestbuys4systems </seller_name>
+      <seller_rating> 28</seller_rating>
+    </seller_info>
+    <payment_types>Visa/MasterCard, American Express, Money Order/Cashiers Checks, Personal Checks
+   </payment_types>
+    <shipping_info>Buyer pays fixed shipping charges, Will ship to United States only
+   </shipping_info>
+    <buyer_protection_info>
+   </buyer_protection_info>
+    <auction_info>
+      <current_bid> $610.00</current_bid>
+      <time_left> 2 days, 5 hours +</time_left>
+      <high_bidder>
+        <bidder_name> wizbang4</bidder_name>
+        <bidder_rating>5 </bidder_rating>
+      </high_bidder>
+      <num_items> 1</num_items>
+      <num_bids>  16</num_bids>
+      <started_at> $100.00</started_at>
+      <bid_increment> </bid_increment>
+      <location>Allentown, PA 18109 </location>
+      <opened> Nov-26-00 19:59:42 PST</opened>
+      <closed>  Nov-29-00 19:59:42 PST</closed>
+      <id_num> 511364992</id_num>
+      <notes>  </notes>
+    </auction_info>
+    <bid_history>
+      <highest_bid_amount>$610.00
+       </highest_bid_amount>
+      <quantity> 1</quantity>
+    </bid_history>
+    <item_info>
+      <memory> 256M High Quality PC133 SDRAM</memory>
+      <hard_drive> 45GB ATA100 7200RPM Hard Drive</hard_drive>
+      <cpu> Genuine Intel Pentium III 1000MHz Processor</cpu>
+      <brand> </brand>
+    </item_info>
+  </listing>
+  <listing>
+    <seller_info>
+      <seller_name> sales@ctgcom.com</seller_name>
+      <seller_rating> 219</seller_rating>
+    </seller_info>
+    <payment_types>Visa/MasterCard, Discover, Money Order/Cashiers Checks, Personal Checks, See item description for payment methods accepted
+   </payment_types>
+    <shipping_info>Buyer pays fixed shipping charges, Will ship to United States only, See item description for shipping charges
+   </shipping_info>
+    <buyer_protection_info>
+   </buyer_protection_info>
+    <auction_info>
+      <current_bid> $535.00</current_bid>
+      <time_left> 2 days, 5 hours +</time_left>
+      <high_bidder>
+        <bidder_name> chul2@mail.utexas.edu</bidder_name>
+        <bidder_rating> 0</bidder_rating>
+      </high_bidder>
+      <num_items> 1</num_items>
+      <num_bids>  13</num_bids>
+      <started_at> $0.01</started_at>
+      <bid_increment> </bid_increment>
+      <location> LOS ANGELES, CA </location>
+      <opened> Nov-26-00 19:56:06 PST</opened>
+      <closed> Nov-29-00 19:56:06 PST</closed>
+      <id_num> 511357667</id_num>
+      <notes>  </notes>
+    </auction_info>
+    <bid_history>
+      <highest_bid_amount>$535.00
+       </highest_bid_amount>
+      <quantity> 1</quantity>
+    </bid_history>
+    <item_info>
+      <memory> 256MB sdram</memory>
+      <hard_drive> 40GB HDD</hard_drive>
+      <cpu> INTEL Pentium III 800MHz</cpu>
+      <brand> </brand>
+    </item_info>
+  </listing>
+</root>

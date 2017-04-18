@@ -27,23 +27,52 @@ There are 3 things I felt were missing the two wonderful packages [`XML`](https:
 
 # Installation
 
-```{r}
+Run the following.
+
+```{r, eval=FALSE}
 devtools::install_github('ultinomics/xmlExtras')
+library(xmlExtras)
+```
+
+# Examples
+
+Let's set up the first example using some ebay data from the [UW XML Data Repository](http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/www/repository.html). These data come as part of the package because I dropped a really another `description` field that makes the data hard to look at. (Parses it just fine!)
+
+```{r ex1a}
 library(xmlExtras)
 
 # USING ebay.xml ------------------------------------------------
-# learn about the structure
-file <- 'data-raw/ebay.xml'
+# load the data
+file <- system.file("extdata", "ebay.xml", package = "xmlExtras")
 doc <- file %>%
   xml2::read_xml()
-tree <- doc %>%
-  xml_get_trees()
 nodeset <- doc %>%
-  xml2::xml_children()
+  xml2::xml_children() # get top level nodeset
+```
 
-## structure
-tree[[1]] %>% xml_view_tree()
+Let's look at the structure of the data. The function
+
+```{r ex1b}
+# `xml_view_tree` structure
+## we can get a tree for each node of the doc
+doc %>% 
+  xml_view_tree()
+doc %>% # we can also vary the depth
+  xml_view_tree(depth = 2)
+## or, we can extract from nodesets
+nodeset[1] %>%
+  xml_view_trees()
+nodeset[1] %>%
+  xml_view_trees(depth=2)
+class(nodeset[1])
+## Will not work with class "xml_node" (can't use lapply on those, apparently)
+nodeset[[1]] %>%
+  xml_view_tree()
+class(nodeset[[1]])
+## easier to read and understand than `xml2::xml_structure()` and has the `depth` option
 nodeset[[1]] %>% xml2::xml_structure()
+nodeset[[1]] %>% xml2::xml_structure()
+```
 terminal <- doc %>% ## get the xpath to parents of terminal node
   xml_get_paths(only_terminal_parent = TRUE)
 xpaths <- terminal %>% ## collapse xpaths to unique only
@@ -93,7 +122,7 @@ df2 <- terminal_nodesets %>%
 # larger file
 
 # using xml_to_df
-file <- 'data-raw/wsu.xml'
+file <- "http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/data/courses/wsu.xml"
 doc <- file %>%
   xml2::read_xml()
 nodeset <- doc %>%
@@ -130,5 +159,6 @@ df2 <- terminal_nodesets %>%
   dplyr::mutate_all(empty_as_na) # kill of NAs
 df2
 
+# they're the same!
+identical(df1, data.table::as.data.table(df2))
 ```
-  

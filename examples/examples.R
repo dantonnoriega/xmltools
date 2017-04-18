@@ -2,7 +2,7 @@ library(xmlExtras)
 
 # USING ebay.xml ------------------------------------------------
 # learn about the structure
-file <- 'data-raw/ebay.xml'
+file <- system.file("extdata", "ebay.xml", package = "xmlExtras")
 doc <- file %>%
   xml2::read_xml()
 tree <- doc %>%
@@ -62,7 +62,7 @@ df2 <- terminal_nodesets %>%
 # larger file
 
 # using xml_to_df
-file <- 'data-raw/wsu.xml'
+file <- "http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/data/courses/wsu.xml"
 doc <- file %>%
   xml2::read_xml()
 nodeset <- doc %>%
