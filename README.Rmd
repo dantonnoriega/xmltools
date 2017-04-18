@@ -30,7 +30,7 @@ Run the following.
 
 ```{r, eval=FALSE}
 devtools::install_github('ultinomics/xmltools')
-library(xmlExtras)
+library(xmltools)
 ```
 
 # Examples
@@ -38,7 +38,7 @@ library(xmlExtras)
 Let's set up the first example using some ebay data from the [UW XML Data Repository](http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/www/repository.html). These data come as part of the package because I dropped a really another `description` field that makes the data hard to look at. (Parses it just fine!)
 
 ```{r ex1a}
-library(xmlExtras)
+library(xmltools)
 
 # USING ebay.xml ------------------------------------------------
 # load the data

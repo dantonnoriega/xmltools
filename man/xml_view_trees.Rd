@@ -4,10 +4,10 @@
 \alias{xml_view_trees}
 \title{view xml simliar to the unix tree command line tool}
 \usage{
-xml_view_trees(tree, depth = NULL)
+xml_view_trees(xml, depth = NULL)
 }
 \arguments{
-\item{tree}{an object of class "xml_tree", "xml_tree_list", or "xml_document"}
+\item{xml}{an object of class "xml_nodeset" or "xml_document"}
 
 \item{depth}{how deep to go. root is 0, next is 1, etc. NULL by default.}
 }
