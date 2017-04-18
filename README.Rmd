@@ -10,9 +10,10 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-# Motivation
 
-There are 3 things I felt were missing the two wonderful packages [`XML`](https://cran.r-project.org/web/packages/XML/index.html) and [`xml2`](https://github.com/hadley/xml2):
+# Motivation for `xmltools`
+
+There are 3 things I felt were missing from the two wonderful packages [`XML`](https://cran.r-project.org/web/packages/XML/index.html) and [`xml2`](https://github.com/hadley/xml2):
 
 1. A easier, more condensed way to see the structure of xml data.
   - `xml2::xml_structure` provides a way to look at the structure, but I find that it is not very easy to read and takes up too much console space.
@@ -57,15 +58,16 @@ Let's look at the structure of the data. The function
 
 ```{r ex1b, eval = F}
 # `xml_view_tree` structure
-## we can get a tree for each node of the doc
+# we can get a tree for each node of the doc
 doc %>% 
   xml_view_tree()
 doc %>% # we can also vary the depth
   xml_view_tree(depth = 2)
 ```
+&nbsp;
 
 ```{r ex1ba}
-## easier to read and understand than `xml2::xml_structure()` and has the `depth` option
+# easier to read and understand than `xml2::xml_structure()` and has the `depth` option
 nodeset[1] %>% xml2::xml_structure()
 
 ## or, we can extract from nodesets
@@ -89,13 +91,14 @@ Terminal nodes in XMLs are nodes that do no have any "children". These nodes con
 I've found myself wanting easy access to all XML paths but could find no tool to do so easily and quickly. I especially wanted the xpaths to terminal nodes for any XML structure. This is accomplished using the `xml_get_paths` function.
 
 ```{r ex1c, eval = F}
-## one can see all the paths per node of a doc
+# one can see all the paths per node of a doc
 doc %>%
   xml_get_paths()
 ```
+&nbsp;
 
 ```{r ex1d}
-## can look at one nodeset
+# can look at one nodeset
 ## NOTE that nodesets can vary, so looking at one doesn't mean you'll find all feasible paths
 
 nodeset[1] %>%
@@ -132,7 +135,7 @@ Next, we use the terminal xpaths above to extract the data we want.
 First, I want to show the issue with using `XML::xmlToDataFrame`.
 
 ```{r ex1e}
-## xmlToDataFrame works great on terminal nodes IF there are no non-terminal nodes any deeper.
+# xmlToDataFrame works great on terminal nodes IF there are no non-terminal nodes any deeper.
 ## we extract a data frame for each parent of terminal nodes
 
 df0 <- lapply(terminal_xpaths, function(x) {
@@ -161,7 +164,7 @@ with the parent node
 But `XML::xmlToDataFrame` will keep digging into `/root/listing` and extract data from xpaths like `/root/listing/seller_info`. But it does so extracting data in a non tidy way. We can see this below comparing the data in `df0[[1]] %>% dplyr::select(seller_info)` vs `df0[[2]]`, which is data extracted from just from `/root/listing/seller_info` and deeper.
 
 ```{r ex1f}
-## problem with xmlToDataFrame is it keeps digging into other nodes recursively in "/root/listing"
+# problem with xmlToDataFrame is it keeps digging into other nodes recursively in "/root/listing"
 
 xpaths[1] # /root/listing is terminal parent but xmlToDataFrame keeps digging
 
@@ -211,7 +214,7 @@ The important distinction is that we first need to find all the terminal nodeset
 For each `terminal_nodeset`, we then apply `xml_dig_df`. For each nodeset, we will get single row of data, so we bind the results for each nodeset. The final data frame is created by column binding. (I convert all empty strings to `NA` for good measure.)
 
 ```{r ex1h}
-## xml_dig_df (xml2 package based)
+# xml_dig_df (xml2 package based)
 terminal_nodesets <- lapply(terminal_xpaths, xml2::xml_find_all, x = doc)
 df2 <- terminal_nodesets %>%
   purrr::map(xml_dig_df) %>% ## does not dig by default
@@ -221,7 +224,7 @@ df2 <- terminal_nodesets %>%
 ```
 
 ```{r ex1i}
-## they're the same!
+# they're the same!
 identical(df1, data.table::as.data.table(df2))
 ```
 

@@ -38,7 +38,7 @@ xml_get_paths <- function(doc, mark_terminal = ifelse(only_terminal_parent, ">>"
 
 #' @export
 xml_get_path <- function(doc, mark_terminal = ifelse(only_terminal_parent, ">>", ""),
-  only_terminal_parent = FALSE) xml_get_paths(doc, markdown)
+  only_terminal_parent = FALSE) xml_get_paths(doc, mark_terminal, only_terminal_parent)
 
 
 path_dig <- function(nodeset, ...) {
