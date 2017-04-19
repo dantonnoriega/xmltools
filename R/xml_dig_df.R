@@ -1,14 +1,15 @@
 #' dig into a nodeset until we find top level data. that is, a node of lenght 0. extract any data with node == 0 (indexed TRUE)
 #' @param nodeset any nodeset of object type xml2
 #' @param dig option to keep digging beyond the first terminal node. if FALSE then only data from the first set of terminal nodes is returned
+#' @param return_if_empty what to return if the node is empty. defaults to empty data.frame
 #' @export
 #' @return nested lists of dataframes
 
-xml_dig_df <- function(nodeset, dig = FALSE) {
+xml_dig_df <- function(nodeset, dig = FALSE, return_if_empty = data.frame()) {
 
   stopifnot(class(nodeset) == "xml_nodeset")
 
-  if(length(nodeset) == 0) return(tibble::tibble())
+  if(length(nodeset) == 0) return(return_if_empty)
   else {
     node_names <- nodeset %>% xml2::xml_name()
     node_len <- nodeset %>% xml2::xml_length()

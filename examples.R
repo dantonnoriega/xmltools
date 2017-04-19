@@ -2,6 +2,11 @@
 ## library(xmltools)
 library(xmltools)
 
+empty_as_na <- function(x){
+  if("factor" %in% class(x)) x <- as.character(x) ## since ifelse wont work with factors
+  if(class(x) == "character") ifelse(as.character(x)!="", x, NA) else x
+}
+
 # USING ebay.xml ------------------------------------------------
 # load the data
 file <- system.file("extdata", "ebay.xml", package = "xmlExtras")
