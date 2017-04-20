@@ -8,8 +8,6 @@
 
 xml_to_df <- function(file, xpath, is_xml = FALSE, dig = FALSE) {
 
-  print(xpath)
-
   # import file or xml
   if(!is_xml) {
     doc <- xml2::read_xml(file) %>% # xml2 can handle zip files of data!
