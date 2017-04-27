@@ -1,25 +1,20 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-Motivation
-==========
+Motivation for `xmltools`
+=========================
 
-There are 3 things I felt were missing the two wonderful packages [`XML`](https://cran.r-project.org/web/packages/XML/index.html) and [`xml2`](https://github.com/hadley/xml2):
+There are 3 things I felt were missing from the two wonderful packages [`XML`](https://cran.r-project.org/web/packages/XML/index.html) and [`xml2`](https://github.com/hadley/xml2):
 
 1.  A easier, more condensed way to see the structure of xml data.
-
--   `xml2::xml_structure` provides a way to look at the structure, but I find that it is not very easy to read and takes up too much console space.
--   `xmltools::xml_view_tree` is more condense and attempts to emulate the `tree` command line program.
-
-1.  A quick way to determine all feasible xpaths and to identify terminal nodes. Data values of interest are contained in terminal nodes (nodes of "length zero" that do no dig any deeper). Quickly getting xpaths to the *parents* of these nodes makes extracting data much easier---and faster if you do not recursively dig deeper.
-
--   `xmltools::xml_get_paths` can find all paths for a given nodeset or xml document. It has options to help tag terminal nodes (`mark_terminal`) and the option to return the parent of any terminal nodes (`mark_terminal_parent`).
-
-1.  Other alternatives for converting xml data to data frames.
-
--   `XML::xmlToDataFrame` exists but it seems to always dig recursively. This leads to some crappy data frames.
--   I offer two alternatives, `xml_to_df` and `xml_dig_df`.
-    -   `xml_to_df` uses the `XML` and `data.table` packages
-    -   `xml_dig_df` is based of `xml2` and `tidyverse` packages.
+    -   `xml2::xml_structure` provides a way to look at the structure, but I find that it is not very easy to read and takes up too much console space.
+    -   `xmltools::xml_view_tree` is more condense and attempts to emulate the `tree` command line program.
+2.  A quick way to determine all feasible xpaths and to identify terminal nodes. Data values of interest are contained in terminal nodes (nodes of "length zero" that do no dig any deeper). Quickly getting xpaths to the *parents* of these nodes makes extracting data much easier---and faster if you do not recursively dig deeper.
+    -   `xmltools::xml_get_paths` can find all paths for a given nodeset or xml document. It has options to help tag terminal nodes (`mark_terminal`) and the option to return the parent of any terminal nodes (`mark_terminal_parent`).
+3.  Other alternatives for converting xml data to data frames.
+    -   `XML::xmlToDataFrame` exists but it seems to always dig recursively. This leads to some crappy data frames.
+    -   I offer two alternatives, `xml_to_df` and `xml_dig_df`.
+        -   `xml_to_df` uses the `XML` and `data.table` packages
+        -   `xml_dig_df` is based of `xml2` and `tidyverse` packages.
 
 Installation
 ============
@@ -41,7 +36,7 @@ library(xmltools)
 
 # USING ebay.xml ------------------------------------------------
 # load the data
-file <- system.file("extdata", "ebay.xml", package = "xmlExtras")
+file <- system.file("extdata", "ebay.xml", package = "xmltools")
 doc <- file %>%
   xml2::read_xml()
 nodeset <- doc %>%
@@ -55,15 +50,17 @@ Let's look at the structure of the data. The function
 
 ``` r
 # `xml_view_tree` structure
-## we can get a tree for each node of the doc
+# we can get a tree for each node of the doc
 doc %>% 
   xml_view_tree()
 doc %>% # we can also vary the depth
   xml_view_tree(depth = 2)
 ```
 
+ 
+
 ``` r
-## easier to read and understand than `xml2::xml_structure()` and has the `depth` option
+# easier to read and understand than `xml2::xml_structure()` and has the `depth` option
 nodeset[1] %>% xml2::xml_structure()
 #> [[1]]
 #> <listing>
@@ -183,13 +180,15 @@ Terminal nodes in XMLs are nodes that do no have any "children". These nodes con
 I've found myself wanting easy access to all XML paths but could find no tool to do so easily and quickly. I especially wanted the xpaths to terminal nodes for any XML structure. This is accomplished using the `xml_get_paths` function.
 
 ``` r
-## one can see all the paths per node of a doc
+# one can see all the paths per node of a doc
 doc %>%
   xml_get_paths()
 ```
 
+ 
+
 ``` r
-## can look at one nodeset
+# can look at one nodeset
 ## NOTE that nodesets can vary, so looking at one doesn't mean you'll find all feasible paths
 
 nodeset[1] %>%
@@ -288,7 +287,7 @@ Next, we use the terminal xpaths above to extract the data we want.
 First, I want to show the issue with using `XML::xmlToDataFrame`.
 
 ``` r
-## xmlToDataFrame works great on terminal nodes IF there are no non-terminal nodes any deeper.
+# xmlToDataFrame works great on terminal nodes IF there are no non-terminal nodes any deeper.
 ## we extract a data frame for each parent of terminal nodes
 
 df0 <- lapply(terminal_xpaths, function(x) {
@@ -312,7 +311,7 @@ with the parent node
 But `XML::xmlToDataFrame` will keep digging into `/root/listing` and extract data from xpaths like `/root/listing/seller_info`. But it does so extracting data in a non tidy way. We can see this below comparing the data in `df0[[1]] %>% dplyr::select(seller_info)` vs `df0[[2]]`, which is data extracted from just from `/root/listing/seller_info` and deeper.
 
 ``` r
-## problem with xmlToDataFrame is it keeps digging into other nodes recursively in "/root/listing"
+# problem with xmlToDataFrame is it keeps digging into other nodes recursively in "/root/listing"
 
 xpaths[1] # /root/listing is terminal parent but xmlToDataFrame keeps digging
 #> [1] "/root/listing"
@@ -371,12 +370,6 @@ terminal_xpaths
 ## we do no want to dig, which quickly gets us the data we want for each terminal xpath `dig = FALSE` (default)
 df1 <- lapply(terminal_xpaths, xml_to_df, file = doc, is_xml = TRUE, dig = FALSE) %>%
   dplyr::bind_cols()
-#> [1] "/root/listing"
-#> [1] "/root/listing/seller_info"
-#> [1] "/root/listing/auction_info"
-#> [1] "/root/listing/auction_info/high_bidder"
-#> [1] "/root/listing/bid_history"
-#> [1] "/root/listing/item_info"
 ```
 
 ### The `xml_dig_df` Function
@@ -388,7 +381,7 @@ The important distinction is that we first need to find all the terminal nodeset
 For each `terminal_nodeset`, we then apply `xml_dig_df`. For each nodeset, we will get single row of data, so we bind the results for each nodeset. The final data frame is created by column binding. (I convert all empty strings to `NA` for good measure.)
 
 ``` r
-## xml_dig_df (xml2 package based)
+# xml_dig_df (xml2 package based)
 terminal_nodesets <- lapply(terminal_xpaths, xml2::xml_find_all, x = doc)
 df2 <- terminal_nodesets %>%
   purrr::map(xml_dig_df) %>% ## does not dig by default
@@ -398,7 +391,7 @@ df2 <- terminal_nodesets %>%
 ```
 
 ``` r
-## they're the same!
+# they're the same!
 identical(df1, data.table::as.data.table(df2))
 #> [1] TRUE
 ```

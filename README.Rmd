@@ -21,15 +21,15 @@ empty_as_na <- function(x){
 There are 3 things I felt were missing from the two wonderful packages [`XML`](https://cran.r-project.org/web/packages/XML/index.html) and [`xml2`](https://github.com/hadley/xml2):
 
 1. A easier, more condensed way to see the structure of xml data.
-  - `xml2::xml_structure` provides a way to look at the structure, but I find that it is not very easy to read and takes up too much console space.
-  - `xmltools::xml_view_tree` is more condense and attempts to emulate the `tree` command line program.
+    - `xml2::xml_structure` provides a way to look at the structure, but I find that it is not very easy to read and takes up too much console space.
+    - `xmltools::xml_view_tree` is more condense and attempts to emulate the `tree` command line program.
 2. A quick way to determine all feasible xpaths and to identify terminal nodes. Data values of interest are contained in terminal nodes (nodes of "length zero" that do no dig any deeper). Quickly getting xpaths to the *parents* of these nodes makes extracting data much easier---and faster if you do not recursively dig deeper.
-  - `xmltools::xml_get_paths` can find all paths for a given nodeset or xml document. It has options to help tag terminal nodes (`mark_terminal`) and the option to return the parent of any terminal nodes (`mark_terminal_parent`).
+    - `xmltools::xml_get_paths` can find all paths for a given nodeset or xml document. It has options to help tag terminal nodes (`mark_terminal`) and the option to return the parent of any terminal nodes (`mark_terminal_parent`).
 3. Other alternatives for converting xml data to data frames.
-  - `XML::xmlToDataFrame` exists but it seems to always dig recursively. This leads to some crappy data frames.
-  - I offer two alternatives, `xml_to_df` and `xml_dig_df`.
-    - `xml_to_df` uses the `XML` and `data.table` packages
-    - `xml_dig_df` is based of `xml2` and `tidyverse` packages.
+    - `XML::xmlToDataFrame` exists but it seems to always dig recursively. This leads to some crappy data frames.
+    - I offer two alternatives, `xml_to_df` and `xml_dig_df`.
+        - `xml_to_df` uses the `XML` and `data.table` packages
+        - `xml_dig_df` is based of `xml2` and `tidyverse` packages.
     
 
 # Installation
@@ -50,7 +50,7 @@ library(xmltools)
 
 # USING ebay.xml ------------------------------------------------
 # load the data
-file <- system.file("extdata", "ebay.xml", package = "xmlExtras")
+file <- system.file("extdata", "ebay.xml", package = "xmltools")
 doc <- file %>%
   xml2::read_xml()
 nodeset <- doc %>%
