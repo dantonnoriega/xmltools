@@ -97,6 +97,7 @@ I've found myself wanting easy access to all XML paths but could find no tool to
 
 ```{r ex1c, eval = F}
 # one can see all the paths per node of a doc
+# NOTE EXECUTED
 doc %>%
   xml_get_paths()
 ```
@@ -265,7 +266,7 @@ terminal_xpaths <- terminal_paths %>% ## collapse xpaths to unique only
 
 # xml_to_df (XML package based)
 ## note that we use file, not doc, hence is_xml = FALSE
-df1 <- lapply(xpaths, xml_to_df, file = file, is_xml = FALSE, dig = FALSE) %>%
+df1 <- lapply(terminal_xpaths, xml_to_df, file = file, is_xml = FALSE, dig = FALSE) %>%
   dplyr::bind_cols()
 df1
 
