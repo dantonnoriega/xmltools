@@ -37,7 +37,7 @@ There are 3 things I felt were missing from the two wonderful packages [`XML`](h
 Run the following.
 
 ```{r, eval=FALSE}
-devtools::install_github('ultinomics/xmltools')
+devtools::install_github('dantonnoriega/xmltools')
 library(xmltools)
 ```
 
@@ -47,6 +47,7 @@ Let's set up the first example using some ebay data from the [UW XML Data Reposi
 
 ```{r ex1a}
 library(xmltools)
+library(magrittr)
 
 # USING ebay.xml ------------------------------------------------
 # load the data
