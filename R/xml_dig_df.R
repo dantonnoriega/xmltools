@@ -25,7 +25,7 @@ xml_dig_df <- function(nodeset, dig = FALSE, return_if_empty = data.frame()) {
           DF <- nodeset[terminal] %>%
             xml2::xml_text() %>%
             t() %>%
-            tibble::as_tibble()
+            tibble::as_tibble( .name_repair="unique" )
           colnames(DF) <- node_names[terminal]
         if(sum(terminal) == length(terminal)) {
           return(DF)
@@ -43,7 +43,7 @@ xml_dig_df <- function(nodeset, dig = FALSE, return_if_empty = data.frame()) {
         DF <- nodeset[terminal] %>%
           xml2::xml_text() %>%
           t() %>%
-          tibble::as_tibble()
+          tibble::as_tibble( .name_repair="unique" )
         colnames(DF) <- node_names[terminal]
         return(DF)
       }
